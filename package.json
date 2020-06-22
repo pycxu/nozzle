@@ -12,6 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "umi": "^3.2.3"
+    "umi": "^3.2.3",
+    "@umijs/preset-react": "^1"
+  },
+  "dependencies": {
+    "antd": "^4.3.5",
+    "axios": "^0.19.2",
+    "moment": "^2.27.0",
+    "recharts": "^1.8.5"
   }
 }
