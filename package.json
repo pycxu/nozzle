@@ -18,7 +18,11 @@
   "dependencies": {
     "antd": "^4.3.5",
     "axios": "^0.19.2",
+    "bootstrap": "^4.5.0",
+    "d3": "^5.16.0",
+    "dns": "^0.2.2",
     "moment": "^2.27.0",
+    "react-bootstrap": "^1.0.1",
     "recharts": "^1.8.5"
   }
 }

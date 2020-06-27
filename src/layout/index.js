@@ -1,5 +1,7 @@
 import { Link } from 'umi';
 import { Layout, Menu, Divider } from 'antd';
+import 'bootstrap/dist/css/bootstrap.css';
+
 import { Component } from 'react';
 import {
   DashboardOutlined,

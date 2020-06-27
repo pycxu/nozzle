@@ -1,4 +1,5 @@
 // Workplace.js
+
 export default () => {
-    return <h1>Workplace Page</h1>
-};
+    return <p>Workplace Page</p>
+  };
