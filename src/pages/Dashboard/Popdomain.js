@@ -1,40 +1,50 @@
 import React, { Component, Fragment } from 'react';
 import { Popover } from 'antd';
+//import rdns from './rdnsExport'
+//const rdns = require('./rdnsModule');
+//const dns = require('dns');
+const whois = require('whois');
 
-const dns = require('dns');
 
 export default class Popdomain extends Component {
 
     state={
-        domains: [],
+        data: [],
     }
     componentDidMount(){
-        // console.log("ip: ", this.props.ipProp)
-        // this.rdns(this.props.ipProp, function(d){
-        //     console.log("domain: ", d);
-        // });
-        // // dns.reverse(`${this.props.ipProp}`, (err, domains)=>{
-        // //     console.log("domains: ",domains);
-        // //     this.setState({domain:domains})
-        // // }
+        // dns.reverse(this.props.ipProp, (err, hostnames)=>{
+        //     this.setState({domains:hostnames})
+        // })
+
+        whois.lookup(this.props.ipProp, (err, info)=>{
+            this.setState({data:info});
+        })
+
+        // whois(this.props.ipProp, function(info){
+        //     console.log("who",info)
+        // })
     }
 
-    // rdns(ip, callback){
-    //     dns.reverse(`${this.props.ipProp}`, (err, domains)=>{
-    //         console.log("domains: ",domains);
-    //         fn(domains);
-    //     }
+    // reversedns (ip){
+    //     // rdns(ip, function(data){
+    //     //     //console.log("hostnames", data);
+    //     //     this.setState({domains:data})
+    //     // })
+    //     rdns.hostnames(ip, function(data){
+    //         //console.log("hostnames", data);
+    //         this.setState({domains:data})
+    //     })
     // }
 
     render(){
 
         var content = (
-            <p>{this.state.domains}</p>
+            <p>{this.state.info}</p>
         );
 
         return(
             <Fragment>
-                <Popover content={content} title="Domain">
+                <Popover content={content} title="Info">
                     {this.props.children}
                 </Popover>
             </Fragment>

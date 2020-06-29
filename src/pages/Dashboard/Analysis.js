@@ -23,6 +23,9 @@ export default class Analysis extends Component {
     }
     
     componentDidMount () {
+        // dns.reverse('8.8.8.8', (err, domains)=>{
+        //             console.log("domains: ",domains);//
+        // })
 
         d3.csv(pktUrl).then((d)=>{
             console.log("pkt:", d);
