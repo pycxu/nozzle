@@ -2,18 +2,13 @@
 import React, { Component, Fragment } from 'react';
 import Table from 'react-bootstrap/Table';
 import * as d3 from 'd3';
-import { Popover } from 'antd';
-import {
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  } from 'recharts';
-import Popscore from './Popscore'
-import Popdomain from './Popdomain'
+import Popscore from './helper/Popscore'
+import Popdomain from './helper/Popdomain'
 
 
-const dns = require('dns');
+//const dns = require('dns');
 const moment = require('moment');
-const pktUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRlt6nYbDHAb0xpLGRgsYIxHAX770mt6cnHIodbpqRSg3rBcW_Y_oOHAHvnEiizQNMaMpq2yTgICGHl/pub?gid=1263250549&single=true&output=csv';
-const hostUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQCImp2Vur8CYk96EbCMlM0Sjxuou3FQzhOjgoIcXn95inzVWmuj5YYxWnHoxlM9F8-sgXMKQqr85E2/pub?gid=1159639971&single=true&output=csv';
+const hostAwsUrl = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/host+-+2020-03-09-result.csv';
 export default class Analysis extends Component {
     state = {
         data:[],
@@ -27,12 +22,15 @@ export default class Analysis extends Component {
         //             console.log("domains: ",domains);//
         // })
 
-        d3.csv(pktUrl).then((d)=>{
-            console.log("pkt:", d);
-        })
-        d3.csv(hostUrl)
+        // d3.csv(pktUrl, {crossOrigin: "null"}).then((d)=>{
+        //     console.log("pkt:", d);
+        // })
+        d3.csv(hostAwsUrl, {
+            headers: new Headers({
+                "Access-Control-Allow-Origin" : "*",
+            })})
         .then((data)=>{
-            console.log("raw data length:",data.length)
+            //console.log("raw data length:",data)
             var parsedData = data.map((d, index) => {
                 
                 return {
@@ -50,7 +48,7 @@ export default class Analysis extends Component {
                     // }
                 }
             });
-            console.log("parsed data length: ",parsedData.length);
+            //console.log("parsed data length: ",parsedData.length);
 
             var parseScore = data.map(d =>{
                 return ([
@@ -64,7 +62,7 @@ export default class Analysis extends Component {
             })
             this.setState({score: parseScore});
 
-            console.log("score: ", parseScore.length);
+            //console.log("score: ", parseScore.length);
 
             //parsedData = parsedData.reverse();
 

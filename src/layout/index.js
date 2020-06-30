@@ -32,7 +32,7 @@ export default class SiderDemo extends Component {
               </Link>
           </div>
           <Divider/>
-          <Menu  defaultSelectedKeys={['1']} mode="inline">
+          <Menu  defaultSelectedKeys={['1']} defaultOpenKeys={['sub1']} mode="inline">
             <SubMenu key="sub1" icon={<DashboardOutlined />} title="Dashboard">
               <Menu.Item key="1"><Link to="/dashboard/monitor">Monitor</Link></Menu.Item>
               <Menu.Item key="2"><Link to="/dashboard/analysis">Analysis</Link></Menu.Item>

@@ -10,14 +10,14 @@ export default class Popscore extends Component{
     render (){
         var content = (
             <BarChart
-                width={500}
+                width={650}
                 height={300}
                 data={this.props.scoreProp[this.props.indexProp]}
                 margin={{
                 top: 5, right: 30, left: 20, bottom: 5,
                 }}
             >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
                 <XAxis dataKey="type" />
                 <YAxis />
                 <Tooltip />
@@ -27,7 +27,7 @@ export default class Popscore extends Component{
         );
         return (
             <Fragment>
-                <Popover placement="top" content={content} title="Score">
+                <Popover placement="top" content={content} title="Confidence Level">
                     {this.props.children}
                 </Popover>
             </Fragment>
