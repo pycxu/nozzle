@@ -3,7 +3,7 @@ import { Popover } from 'antd';
 //import rdns from './rdnsExport'
 //const rdns = require('./rdnsModule');
 //const dns = require('dns');
-// const whois = require('whois');
+const whois = require('whois');
 
 
 export default class Popdomain extends Component {
@@ -16,9 +16,9 @@ export default class Popdomain extends Component {
         //     this.setState({domains:hostnames})
         // })
 
-        // whois.lookup(this.props.ipProp, (err, info)=>{
-        //     this.setState({data:info});
-        // })
+        whois.lookup(this.props.ipProp, (err, info)=>{
+            this.setState({data:info});
+        })
 
         // whois(this.props.ipProp, function(info){
         //     console.log("who",info)
