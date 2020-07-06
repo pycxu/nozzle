@@ -23,6 +23,7 @@
     "dns": "^0.2.2",
     "moment": "^2.27.0",
     "react-bootstrap": "^1.0.1",
+    "react-json-to-table": "^0.1.5",
     "recharts": "^1.8.5",
     "shebang-loader": "0.0.1",
     "whois": "^2.12.1"
