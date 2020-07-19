@@ -30,7 +30,6 @@ export default class Monitor extends Component {
                     traffic_rate:   pkt['Traffic_Rate']//parseFloat(pkt['Traffic_Rate']*Math.pow(10,-9)).toFixed(4)
                 }
             })
-            console.log("pdsda",parsedData);
 
             var qtr = parseInt(parsedData.length * (1/parsedData.length)); 
             
