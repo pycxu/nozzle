@@ -2,10 +2,13 @@
 import React, { Component, Fragment } from 'react';
 import Table from 'react-bootstrap/Table';
 import * as d3 from 'd3';
-import Popscore from './helper/Popscore';
-import Popdomain from './helper/Popdomain';
+import Popscore from './utils/Popscore';
+import Popdomain from './utils/Popdomain';
+import Ring from './utils/Ring';
 import firebase from './firebase/firebase';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Link } from 'umi';
+
 
 const moment = require('moment');
 const hostAwsUrl = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/host+-+2020-03-09-result.csv';
@@ -44,7 +47,9 @@ export default class Analysis extends Component {
                                         case 'NAT': return 'NAT';
                                     }
                                 })();
-
+                                if ((typeof d[`${scoreKey}`] == 'undefined') || (d[`${scoreKey}`] == null)){
+                                    d[`${scoreKey}`] = 0;
+                                }
                                 rootRef.child(`${d['IP'].replace(/\./g,',')}`).push().set({
                                     time: d['Time'],
                                     type: d['Classification'],
@@ -126,8 +131,16 @@ export default class Analysis extends Component {
                                     {/* </Popdomain> */}
                                     <td>
                                         <Popscore scoreProp={this.state.score} indexProp={d.index}>
-                                            {d.host_type}  {d.host_score}CL
+                                            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                                                <span style={{width: '65%'}}>{d.host_type}</span>
+                                                <div style={{width: '35%'}}>
+                                                    <ProgressBar variant={(d.host_score > 0.49)?'success':'danger'} now={d.host_score * 100} /> 
+                                                </div>
+                                                
+                                                {/* <Ring percentProp={d.host_score}/> */}
+                                            </div>
                                         </Popscore>
+                                        
                                     </td>
                                 </tr>
                             )

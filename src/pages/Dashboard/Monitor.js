@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import {
     Text, CartesianGrid,Label,Area,AreaChart, LineChart, Line, XAxis,YAxis, Tooltip,
   } from 'recharts';
-import DataFormater from './helper/DataFormater';
+import DataFormater from './utils/DataFormater';
 
 const moment = require('moment');
 const pktAwsUrl = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/pkt+-+09-03-2020_Packet_Stats.csv';

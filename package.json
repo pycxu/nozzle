@@ -28,6 +28,7 @@
     "react-json-to-table": "^0.1.5",
     "recharts": "^1.8.5",
     "shebang-loader": "0.0.1",
-    "whois": "^2.12.1"
+    "whois": "^2.12.1",
+    "@ant-design/charts": "0.9.7"
   }
 }
