@@ -12,6 +12,7 @@ import { Link } from 'umi';
 
 const moment = require('moment');
 const hostAwsUrl = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/host+-+2020-03-09-result.csv';
+const filteredHost = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/filteredHost+-+filtered-0310-result.csv';
 export default class Analysis extends Component {
     state = {
         data:[],
@@ -21,80 +22,66 @@ export default class Analysis extends Component {
     }
     
     componentDidMount () {
-        
-        d3.csv(hostAwsUrl, {
+
+        var parsedData = [];
+        var parseScore = [];
+        var scoreKey;
+
+        d3.csv(filteredHost, {
             headers: new Headers({
                 "Access-Control-Allow-Origin" : "*",
             })})
         .then((data)=>{
+            //firebase.database().ref().remove();
+            var rootRef = firebase.database().ref('hosts');
+            
+            data.map((d, index) =>{
+                
+                if((d.ID != '') && (d['Classification'] != '')){
 
-            data.map(d =>{
+                    scoreKey = (()=>{
+                        switch(d['Classification']){
+                            case 'EndHost': return 'Endhost';
+                            case 'TCPServer': return 'TCP Server';
+                            case 'UDPProxy': return 'UDP Proxy';
+                            case 'UDPServer': return 'UDP Server';
+                            case 'TCPProxy': return 'TCP Proxy';
+                            case 'NAT': return 'NAT';
+                        }
+                    })();
 
-                //firebase.database().ref().remove();
-                var rootRef = firebase.database().ref('hosts');
-                //if((typeof d['Classification'] !== 'undefined') && (d['Classification'] != null))
-                    
+                    if ((typeof d[`${scoreKey}`] == 'undefined') || (d[`${scoreKey}`] == null)){
+                        d[`${scoreKey}`] = 0;
+                    }
+
                     rootRef.child(`${d['IP'].replace(/\./g,',')}`).orderByChild('time').equalTo(`${d['Time']}`).once('value', snapshot => {
-                        if((!snapshot.exists()) && (d['Classification'] != '')){
-                            
-                                var scoreKey = (()=>{
-                                    switch(d['Classification']){
-                                        case 'EndHost': return 'Endhost';
-                                        case 'TCPServer': return 'TCP Server';
-                                        case 'UDPProxy': return 'UDP Proxy';
-                                        case 'UDPServer': return 'UDP Server';
-                                        case 'TCPProxy': return 'TCP Proxy';
-                                        case 'NAT': return 'NAT';
-                                    }
-                                })();
-                                if ((typeof d[`${scoreKey}`] == 'undefined') || (d[`${scoreKey}`] == null)){
-                                    d[`${scoreKey}`] = 0;
-                                }
-                                rootRef.child(`${d['IP'].replace(/\./g,',')}`).push().set({
-                                    time: d['Time'],
-                                    type: d['Classification'],
-                                    score: d[`${scoreKey}`]
-                                });
-                            
+                        if(!snapshot.exists()){
+                            rootRef.child(`${d['IP'].replace(/\./g,',')}`).push().set({
+                                time: d['Time'],
+                                type: d['Classification'],
+                                score: d[`${scoreKey}`]
+                            });
                         }
                     })
-                
-          
+
+                    parsedData.push({
+                        index: index,
+                        time: moment.unix(d['Time']).format('h:mm:ss'),
+                        ip: d['IP'],
+                        host_type: d['Classification'],
+                        host_score: d[`${scoreKey}`]
+                    });
+
+                    parseScore.push([
+                        {type: 'EndHost', score: d['Endhost']},
+                        {type: 'NAT', score: d['NAT']},
+                        {type: 'TCP Proxy', score: d['TCP Proxy']},
+                        {type: 'TCP Server', score: d['TCP Server']},
+                        {type: 'UDP Proxy', score: d['UDP Proxy']},
+                        {type: 'UDP Server', score: d['UDP Server']} 
+                    ]);
+                }    
             });
-
-
-            var parsedData = data.map((d, index) => {
-
-                var scoreKey = (()=>{
-                    switch(d['Classification']){
-                        case 'EndHost': return 'Endhost';
-                        case 'TCPServer': return 'TCP Server';
-                        case 'UDPProxy': return 'UDP Proxy';
-                        case 'UDPServer': return 'UDP Server';
-                        case 'TCPProxy': return 'TCP Proxy';
-                        case 'NAT': return 'NAT';
-                    }
-                })();
-                
-                return {
-                    index: index,
-                    time: moment.unix(d['Time']).format('h:mm:ss'),
-                    ip: d['IP'],
-                    host_type: d['Classification'],
-                    host_score: d[`${scoreKey}`]
-                }
-            });
-
-            var parseScore = data.map(d =>{
-                return ([
-                    {type: 'EndHost', score: d['Endhost']},
-                    {type: 'NAT', score: d['NAT']},
-                    {type: 'TCP Proxy', score: d['TCP Proxy']},
-                    {type: 'TCP Server', score: d['TCP Server']},
-                    {type: 'UDP Proxy', score: d['UDP Proxy']},
-                    {type: 'UDP Server', score: d['UDP Server']} 
-                ])
-            })
 
             this.setState({score: parseScore});
 

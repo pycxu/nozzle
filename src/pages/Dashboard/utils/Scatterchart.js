@@ -26,7 +26,7 @@ export default class Scatterchart extends Component {
             forceFit: true,
             yAxis: {
               min: 0,
-              max: 1.5
+              max: 1.2
             }
           };
         return (
