@@ -71,7 +71,7 @@ export default class Workplace extends Component {
           }
 
           return {
-            time: moment.unix(snapshot.val()[key].time).format('dddd, MMMM Do, YYYY h:mm:ss A'),
+            time: moment.unix(snapshot.val()[key].time).format('DD/MM H:mm'),
             type: snapshot.val()[key].type,
             score: snapshot.val()[key].score
           }

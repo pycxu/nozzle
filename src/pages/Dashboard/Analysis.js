@@ -123,8 +123,6 @@ export default class Analysis extends Component {
                                                 <div style={{width: '35%'}}>
                                                     <ProgressBar variant={(d.host_score > 0.49)?'success':'danger'} now={d.host_score * 100} /> 
                                                 </div>
-                                                
-                                                {/* <Ring percentProp={d.host_score}/> */}
                                             </div>
                                         </Popscore>
                                         
