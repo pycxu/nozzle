@@ -16,6 +16,7 @@
     "umi": "^3.2.10"
   },
   "dependencies": {
+    "@ant-design/charts": "0.9.7",
     "antd": "^4.3.5",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
@@ -23,12 +24,12 @@
     "dns": "^0.2.2",
     "firebase": "^7.16.1",
     "moment": "^2.27.0",
+    "nats": "^1.4.12",
     "react-bootstrap": "^1.0.1",
     "react-heatmap-grid": "^0.8.2",
     "react-json-to-table": "^0.1.5",
     "recharts": "^1.8.5",
     "shebang-loader": "0.0.1",
-    "whois": "^2.12.1",
-    "@ant-design/charts": "0.9.7"
+    "whois": "^2.12.1"
   }
 }

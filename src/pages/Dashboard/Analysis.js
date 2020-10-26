@@ -3,8 +3,6 @@ import React, { Component, Fragment } from 'react';
 import Table from 'react-bootstrap/Table';
 import * as d3 from 'd3';
 import Popscore from './utils/Popscore';
-import Popdomain from './utils/Popdomain';
-import Ring from './utils/Ring';
 import firebase from './firebase/firebase';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Link } from 'umi';
@@ -13,6 +11,19 @@ import { Link } from 'umi';
 const moment = require('moment');
 const hostAwsUrl = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/host+-+2020-03-09-result.csv';
 const filteredHost = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/filteredHost+-+filtered-0310-result.csv';
+// const jsondata = [  {
+//     "Date": "2016-12",
+//     "scales": 195
+//   },
+//   {
+//     "Date": "2017-01",
+//     "scales": 145
+//   },
+//   {
+//     "Date": "2017-02",
+//     "scales": 207
+//   }
+// ];
 export default class Analysis extends Component {
     state = {
         data:[],
@@ -26,8 +37,16 @@ export default class Analysis extends Component {
         var parsedData = [];
         var parseScore = [];
         var scoreKey;
+        // const NATS = require('nats');
+        // let nc = NATS.connect();
+        // nc.on('connect', (c) => {
+        //     // Do something with the connection
+        //     console.log('connected to nats');
+        //     // When done close it
+        //     nc.close();
+        // });
 
-        d3.csv(filteredHost, {
+        d3.csv(hostAwsUrl, {
             headers: new Headers({
                 "Access-Control-Allow-Origin" : "*",
             })})

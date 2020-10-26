@@ -89,8 +89,8 @@ export default class Workplace extends Component {
 
     return (
       <Fragment>
-        {!this.state.query ?<Search placeholder="Host IP Address" onSearch={value => this.handleSearch(value)} style={{ width: 200 }} />:<span className='badge badge-pill badge-primary'>{this.state.ip}</span>}
-
+        {!this.state.query ?<Search placeholder="Host IP Address" onSearch={value => this.handleSearch(value)} style={{ width: 200 }} />:(<span className='badge badge-pill badge-primary'>{this.state.ip}</span>)}
+        {/* {this.state.query?<span>true</span>:<span>false</span>} */}
         <div style={{display: 'flex', flexDirection: 'row'}}>
           <Card title="Host Info" bordered={true} style={{ width: '50%'}}>
             <Hostinfo ipProp={this.state.ip}/>
