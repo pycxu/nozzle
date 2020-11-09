@@ -1,81 +1,151 @@
-// Monitor.js
-import React, { Component, Fragment } from 'react';
-import * as d3 from 'd3';
-import {
-    Text, CartesianGrid,Label,Area,AreaChart, LineChart, Line, XAxis,YAxis, Tooltip,
-  } from 'recharts';
+// // Monitor.js
+import React, {useEffect, useState} from 'react';
+import { Line, Area} from '@ant-design/charts';
+import { Card } from 'antd';
 import DataFormater from './utils/DataFormater';
 
 const moment = require('moment');
-const pktAwsUrl = 'https://nozzlehostdata.s3-ap-southeast-2.amazonaws.com/pkt+-+09-03-2020_Packet_Stats.csv';
-export default class Monitor extends Component {
+import * as _ from 'lodash'
 
-    state = {
-        traffics: [],
-        count:1
+const Monitor = () => {
+    const [traffics, setTraffics] = useState([]);
+    const [temp, setTemp] = useState(0)
+
+    useEffect(()=>{
+    setInterval(()=>{
+        setTemp((prevTemp)=>prevTemp+1)
+    }, 6000)
+    }, [])
+
+    useEffect(()=>{
+    fetchData()
+    }, [temp])
+
+
+    const fetchData =  async () => {
+        try {
+            const response = await  fetch('http://localhost:8080/api/pkt');
+            if (!response.ok) {throw Error(response.statusText);}
+            const jsonObj = await response.json();
+            var newTraffic = {
+                time:   moment.unix(jsonObj['Time']).format('h:mA'),
+                unique_hosts:   jsonObj['Number_of_unique_hosts'],
+                pkts:   jsonObj['Packets_Entering_DPDK'],
+                traffic_rate:   jsonObj['Traffic_Rate']/parseFloat(jsonObj['Traffic_Rate']*Math.pow(10,-9)).toFixed(4)
+            }
+
+            if(!(_.isEqual(traffics.slice(-1)[0], newTraffic))){
+                setTraffics(traffics => [...traffics, newTraffic]);
+            }
+        }
+        catch (error) {console.log(error);}
     }
+
+    var lineHostConfig = {
+        smooth: true,
+        height: 250,
+        width: 1089,
+        data: traffics,
+        padding: 'auto',
+        xField: 'time',
+        yField: 'unique_hosts',
+        yAxis:{
+            label:{
+                formatter: function formatter(v){
+                    if(v > 1000000000){
+                      return (v/1000000000).toFixed(3).toString() + 'G';
+                    }else if(v > 1000000){
+                      return (v/1000000).toFixed(3).toString() + 'M';
+                    }else if(v > 1000){
+                      return (v/1000).toFixed(3).toString() + 'K';
+                    }else{
+                      return v.toString();
+                    }
+                },
+            },
+        },
+    };
+
+    var linePktConfig = {
+        smooth: true,
+        height: 250,
+        width: 1089,
+        data: traffics,
+        padding: 'auto',
+        xField: 'time',
+        yField: 'pkts',
+        yAxis:{
+            label:{
+                formatter: function formatter(v){
+                    if(v > 1000000000){
+                      return (v/1000000000).toFixed(3).toString() + 'G';
+                    }else if(v > 1000000){
+                      return (v/1000000).toFixed(3).toString() + 'M';
+                    }else if(v > 1000){
+                      return (v/1000).toFixed(3).toString() + 'K';
+                    }else{
+                      return v.toString();
+                    }
+                },
+            },
+        },
+    };
+
+    var areaTrConfig = {
+        smooth: true,
+        height: 250,
+        width: 1089,
+        data: traffics,
+        xField: 'time',
+        yField: 'traffic_rate',
+        annotations: [
+            {
+            type: 'text',
+            position: ['min', 'median'],
+            content: 'Mean',
+            offsetY: -4,
+            style: { textBaseline: 'bottom' },
+            },
+            {
+            type: 'line',
+            start: ['min', 'median'],
+            end: ['max', 'median'],
+            style: {
+                stroke: 'red',
+                lineDash: [2, 2],
+            },
+            },
+        ],
+        yAxis:{
+            label:{
+                formatter: function formatter(v){
+                    if(v > 1000000000){
+                    return (v/1000000000).toFixed(3).toString() + 'G';
+                    }else if(v > 1000000){
+                    return (v/1000000).toFixed(3).toString() + 'M';
+                    }else if(v > 1000){
+                    return (v/1000).toFixed(3).toString() + 'K';
+                    }else{
+                    return v.toString();
+                    }
+                },
+            },
+        },
+    };
     
-    componentDidMount(){
-    d3.csv(pktAwsUrl, {
-        headers: new Headers({
-            "Access-Control-Allow-Origin" : "*",
-        })}).then((pktInfo)=>{
-            console.log("pkt: ",pktInfo);
-            var parsedData = pktInfo.map((pkt,index) => {
-                return {
-                    index: index,
-                    time:   moment.unix(pkt['Time']).format('h:mA'),
-                    unique_hosts:   pkt['Number_of_unique_hosts'],
-                    pkts:   pkt['Packets_Entering_DPDK'],
-                    traffic_rate:   pkt['Traffic_Rate']//parseFloat(pkt['Traffic_Rate']*Math.pow(10,-9)).toFixed(4)
-                }
-            })
-
-            var qtr = parseInt(parsedData.length * (1/parsedData.length)); 
-            
-            this.interval = setInterval(() => {
-                if (this.state.count < parsedData.length){
-                    this.setState({traffics: parsedData.slice(0,qtr*this.state.count), count: this.state.count+1}); 
-                }           
-            }, 100);
-        })
-  }
-    componentWillUnmount() {
-        clearInterval(this.interval);
-    }
-
-    render () {
-        return (
-            <Fragment>
-                <div>
-                        <LineChart width={1089} height={250} data={this.state.traffics} margin={{ top: 10, right: 0, bottom: 0, left: 0 }}> 
-                            <Tooltip wrapperStyle={{backgroundColor: '#ccc' }}/>
-                            <XAxis dataKey="time" hide/>
-                            <YAxis domain={[dataMax => (dataMax / 2), dataMax => (dataMax * 2)]} tickFormatter={DataFormater} style={{fontSize:10}} label={<Text x={0} y={0} dx={65} dy={30} offset={0} style={{fontSize:10}}>Hosts</Text>}/>
-                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                            <Label  dataKey="hosts" position="insideTopLeft"/>
-                            <Line type="monotone" dataKey="unique_hosts" stroke="#8884d8" />
-                        </LineChart>
-                        
-                        <LineChart width={1089} height={250} data={this.state.traffics} margin={{ top: 10, right: 0, bottom: 0, left: 0 }}> 
-                            <Tooltip wrapperStyle={{backgroundColor: '#ccc' }}/>
-                            <XAxis dataKey="time" hide/>
-                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                            <YAxis domain={[dataMax => (dataMax / 2), dataMax => (dataMax * 2)]} tickFormatter={DataFormater} style={{fontSize:10}} label={<Text x={0} y={0} dx={65} dy={30} offset={0} style={{fontSize:10}}>Packets</Text>}/>
-                            <Label  dataKey="pkts" position="insideTopLeft"/>
-                            <Line type="monotone" dataKey="pkts" stroke="#8884d8" />
-                        </LineChart>
-                        
-                        <AreaChart width={1089} height={250} data={this.state.traffics} margin={{ top: 10, right: 0, bottom: 0, left: 0 }}>
-                            <Tooltip wrapperStyle={{backgroundColor: '#ccc' }}/>
-                            <YAxis domain={[dataMax => (dataMax / 2), dataMax => (dataMax * 2)]} tickFormatter={DataFormater} style={{fontSize:10}} label={<Text x={0} y={0} dx={65} dy={30} offset={0} style={{fontSize:10}}>Traffic rate</Text>}/>
-                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                            <XAxis style={{fontSize:10}} dataKey="time" domain = {['auto', 'auto']} />
-                            <Area type="monotone" dataKey="traffic_rate" stroke="#8884d8" unit={"bps"}/>
-                        </AreaChart>
-                </div>
-                
-            </Fragment>
-        )
-    }
+    return (
+            <div>
+                <Card title="Hosts" bordered={false} >
+                    <Line {...lineHostConfig} />
+                </Card>
+                <Card title="Packets" bordered={false} >
+                    <Line {...linePktConfig} />
+                </Card>
+                <Card title="Traffic rate" bordered={false} >
+                    <Area {...areaTrConfig} />
+                </Card>  
+            </div>
+    );
 }
+
+export default Monitor;

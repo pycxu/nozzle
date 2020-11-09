@@ -10,16 +10,16 @@ export default {
           {
             path: '/dashboard',
             routes: [
-              { path: '/dashboard/monitor', component: 'Dashboard/Monitor' },
-              { path: '/dashboard/analysis', component: 'Dashboard/Analysis' },
-              { path: '/dashboard/workplace', component: 'Dashboard/Workplace' }
+              { path: '/dashboard/monitor', component: 'dashboard/monitor' },
+              { path: '/dashboard/analysis', component: 'dashboard/analysis' },
+              { path: '/dashboard/workplace', component: 'dashboard/workplace' }
             ]
           },
           {
             path: '/about',
             routes: [
-              { path: '/about/overview', component: 'About/Overview' },
-              { path: '/about/data', component: 'About/Data' }              
+              { path: '/about/overview', component: 'about/overview' },
+              { path: '/about/data', component: 'about/data' }              
             ]
           }
         ]
